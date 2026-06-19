@@ -1,0 +1,310 @@
+Environments
+How to create and manage environment configurations in ContextQA, including base URLs, encrypted parameters, variable usage in test steps, and environment selection at execution time.
+
+Who is this for? SDETs and QA managers who need to run the same test suite against multiple deployment targets — staging, QA, and production — without modifying any test steps.
+
+An environment is a named configuration that stores a base URL and a set of key-value parameters for one deployment target of your application. Environments let you run the same test suite against staging, QA, and production without modifying a single test step — you simply select a different environment at execution time and every ${ENV.KEY} reference in your steps resolves to the appropriate value for that target.
+
+Prerequisites
+You have a workspace created.
+
+You have the base URL for at least one of your application's deployment environments (e.g., https://staging.myapp.com).
+
+For encrypted parameters: you have the credentials, API keys, or other secrets to store.
+
+What is an Environment?
+Every application you test exists in multiple deployment states simultaneously: developers work against local instances, QA teams test on staging, and end users interact with production. Each of these deployments has a different URL and typically uses different credentials, API endpoints, feature flags, and third-party service configurations.
+
+Without environment management, teams hard-code URLs and credentials in test steps or maintain separate copies of test cases per environment — both approaches are error-prone and expensive to maintain.
+
+ContextQA environments solve this by centralizing deployment-specific values. A test step like:
+
+
+Copy
+Navigate to ${ENV.BASE_URL}/login
+Type ${ENV.TEST_USERNAME} in the Email field
+...runs correctly against any environment — staging, QA, or production — as long as the selected environment has BASE_URL and TEST_USERNAME defined with the appropriate values.
+
+Creating an Environment
+Navigate to Test Development → Environments.
+
+Click + Create Environment.
+
+Fill in the environment creation form:
+
+Name A short, descriptive name. Convention: use the deployment tier name, optionally qualified by region or purpose. Examples: Staging, Production, QA-US, Production-EU, Sandbox-Payments.
+
+Description Optional free-text notes. Document the purpose of this environment, who owns it, any known limitations, and the maintenance contact.
+
+Base URL The root URL of the application in this environment. Include the protocol and domain, without a trailing slash:
+
+
+Copy
+https://staging.myapp.com
+The base URL is used as the starting navigation point for test cases that use ${ENV.BASE_URL} and is displayed prominently in execution reports for easy identification.
+
+Click Create. The environment is created and the parameter configuration panel opens.
+
+Adding Parameters
+Parameters are the key-value pairs that test steps reference using the ${ENV.KEY} syntax. After creating the environment, add all the values your test cases need.
+
+Adding a Parameter
+In the environment editor, under Parameters, click + Add Parameter.
+
+Enter the Key — the variable name exactly as it will be referenced in test steps. Keys are case-sensitive: BASE_URL and base_url are different keys.
+
+Enter the Value — the value for this environment.
+
+Select the Type:
+
+Text — plain string. The value is displayed in the UI and included in execution logs.
+
+Password — the value is encrypted at rest (AES-256) and masked in the UI with asterisks. It is redacted from execution logs, screenshots, and exported reports.
+
+Click Save.
+
+Repeat for each parameter your test cases need.
+
+Recommended Parameter Set
+While every application differs, the following parameter set covers most test scenarios:
+
+Key
+Type
+Example Value
+Purpose
+BASE_URL
+
+text
+
+https://staging.myapp.com
+
+Root URL for navigation steps
+
+API_BASE_URL
+
+text
+
+https://api-staging.myapp.com
+
+Base URL for REST API call steps
+
+ADMIN_EMAIL
+
+text
+
+admin@staging-test.com
+
+Admin user login
+
+ADMIN_PASSWORD
+
+password
+
+Admin-Staging-123!
+
+Admin user password
+
+TEST_USER_EMAIL
+
+text
+
+user@staging-test.com
+
+Standard user login
+
+TEST_USER_PASSWORD
+
+password
+
+User-Staging-456!
+
+Standard user password
+
+API_TOKEN
+
+password
+
+sk-staging-abc123
+
+API authentication token
+
+STRIPE_TEST_KEY
+
+password
+
+pk_test_abc...
+
+Payment provider test key
+
+Parameter Types in Detail
+Text Parameters
+Text parameters are stored as plain strings. They appear in their original form everywhere: in the UI, in execution logs, and in step descriptions that reference them.
+
+Use text parameters for:
+
+URLs and hostnames
+
+Non-sensitive configuration values (feature flag names, locale codes, timeout values)
+
+Email addresses used for testing
+
+Any value you might want to see in test logs for debugging
+
+Password Parameters
+Password parameters are encrypted at rest using AES-256. They are masked in all UI views with asterisks and are never returned by the API in plain text. In execution logs, the variable reference (e.g., ${ENV.ADMIN_PASSWORD}) is visible, but the resolved value is replaced with [REDACTED].
+
+Use password parameters for:
+
+User passwords
+
+API keys, bearer tokens, OAuth secrets
+
+Database connection strings
+
+Third-party service credentials
+
+Any value that would present a security risk if exposed in a log or screenshot
+
+Important: Storing a value as a password parameter does not prevent it from appearing in screenshots if the application renders it on screen. If a page displays an API key in cleartext (e.g., a developer settings page), the screenshot will capture it. Structure your tests to avoid taking screenshots on pages that display sensitive values, or use the "Never" screenshot capture setting on such steps.
+
+Using Environment Variables in Tests
+Once parameters are defined in an environment, reference them in test steps with the ${ENV.KEY} syntax.
+
+In AI Agent Step Descriptions
+
+Copy
+Type ${ENV.TEST_USER_EMAIL} in the Email Address field
+Type ${ENV.TEST_USER_PASSWORD} in the Password field
+Click the Sign In button
+Verify the heading reads "Welcome back, ${ENV.ADMIN_EMAIL}"
+In Navigate Steps
+
+Copy
+${ENV.BASE_URL}/admin/users
+${ENV.BASE_URL}/reports?date=2026-01-01&format=pdf
+In REST API Call Steps
+URL field:
+
+
+Copy
+${ENV.API_BASE_URL}/api/v2/users
+Headers:
+
+
+Copy
+Authorization: Bearer ${ENV.API_TOKEN}
+X-Tenant-ID: ${ENV.TENANT_ID}
+Request body:
+
+
+Copy
+{
+  "email": "${ENV.TEST_USER_EMAIL}",
+  "role": "viewer"
+}
+Combining ENV Variables with Other Variable Types
+Environment variables can be combined with local variables, global variables, and data profile variables in the same step:
+
+
+Copy
+Navigate to ${ENV.BASE_URL}/users/${userId}/edit
+Here ${ENV.BASE_URL} comes from the environment and ${userId} is a local variable set by a previous API call step. Both are resolved at execution time.
+
+Selecting an Environment at Execution
+The environment is selected each time an execution is triggered. The same test plan can be run against different environments by selecting a different environment at execution time.
+
+Manual Execution
+Open the test plan.
+
+Click Execute.
+
+In the confirmation dialog, use the Execution Environment dropdown to select the target environment.
+
+Click Confirm Execution.
+
+The selected environment name appears in all execution records and reports produced by this run.
+
+In Scheduled Runs
+Each schedule within a test plan specifies a default environment:
+
+Navigate to Test Plans → your plan → Schedules tab.
+
+Open a schedule.
+
+In the Environment field, select the environment this schedule should use.
+
+A test plan can have multiple schedules targeting different environments — for example, a nightly schedule running against Staging and a weekly schedule running against Production.
+
+Via MCP
+
+Copy
+# Execute a test plan against a specific environment
+execute_test_plan(
+    test_plan_id=789,
+    environment_id=42   # The ID of the "Staging" environment
+)
+Retrieve environment IDs using:
+
+
+Copy
+environments = get_environments()
+# Returns list of { "id": 42, "name": "Staging", "base_url": "..." }
+Creating Environments via MCP
+For teams that manage infrastructure as code or provision environments dynamically (e.g., ephemeral preview environments per pull request), the MCP server provides a tool to create environments programmatically:
+
+
+Copy
+create_environment(
+    name="PR-1234-Preview",
+    description="Ephemeral preview environment for PR #1234",
+    parameters={
+        "BASE_URL": {
+            "type": "text",
+            "value": "https://pr-1234.preview.myapp.com"
+        },
+        "API_BASE_URL": {
+            "type": "text",
+            "value": "https://api-pr-1234.preview.myapp.com"
+        },
+        "ADMIN_EMAIL": {
+            "type": "text",
+            "value": "admin@preview-test.com"
+        },
+        "ADMIN_PASSWORD": {
+            "type": "password",
+            "value": "PreviewAdmin123!"
+        }
+    }
+)
+In a CI/CD pipeline, this pattern allows you to create a new environment record for each pull request, run the test suite against it using execute_test_plan(environment_id=...), and delete the environment record when the PR is merged.
+
+Viewing the Environments Page
+
+ContextQA platform architecture diagram showing clients, MCP Server, backend services, and the 9-stage execution pipeline connecting to web, mobile, API, and enterprise targets
+The Environments page lists all environments in the workspace. Each row shows the environment name, base URL, and the number of parameters defined. Click on an environment name to open the parameter editor.
+
+Tips & Best Practices
+Create at least two environments from the start: Staging and Production. Even if you only run tests against Staging initially, having the Production environment configured makes it trivial to run a quick verification against production after a deployment.
+
+Never store production credentials in a Staging environment. Keep environment parameter sets fully separate. Staging environments should use dedicated test accounts, not production user credentials.
+
+Use descriptive parameter keys. BASE_URL is clearer than URL. ADMIN_PASSWORD is clearer than PWD. Future team members reading test steps should be able to understand what each ${ENV.KEY} reference is without consulting the environment configuration.
+
+Document unstable or environment-specific behaviors in the description. If the staging environment is often slow, has a different authentication flow, or shows a maintenance page on weekends, note this in the environment description. This helps diagnose false failures quickly.
+
+Rotate password parameters when credentials change. When test accounts are rotated or API keys are regenerated, update the corresponding password parameters in the environment configuration. Tests will immediately use the new credentials without any test case changes.
+
+Troubleshooting
+Steps are failing with "variable not found" for an ENV parameter Check that:
+
+The parameter key in the environment exactly matches the ${ENV.KEY} reference in the step, including case.
+
+The correct environment is selected in the test plan or execution dialog.
+
+The environment has been saved after the parameter was added.
+
+Password parameter values are appearing in execution logs Password parameters are only redacted in ContextQA's own log outputs. If your application echoes back the value (for example, a REST API that returns the submitted password in an error response), it will appear in the network log body. This is an application security concern, not a ContextQA configuration issue.
+
+Switching environments caused a test to fail that previously passed The most common cause is a missing parameter in the new environment. Compare the parameters defined in both environments — the failing environment may be missing a key that the working environment has. Open the failing execution's network log or console log for a "variable not resolved" error that identifies the missing key.
+
+I created a new environment but it does not appear in the execution environment dropdown Refresh the browser. Environment lists in dropdowns are loaded from the API and may be cached for a few seconds after creation.

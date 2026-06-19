@@ -1,0 +1,50 @@
+Overall Structure
+An SVG canvas (viewBox="0 0 600 420") driven by a single requestAnimationFrame loop that runs from t=0 to t=14 seconds. The animation has four sequential phases that overlap slightly, plus a continuous mouse proximity interaction layer. All timing uses a cubic ease-out curve (1 - (1-t)³) and a simple linear interpolation helper.
+
+Mouse Interaction (always active)
+A 120px-radius invisible "spotlight" follows the cursor across the SVG. Any element within that radius gets an opacity boost of up to +0.35, making it glow brighter as you hover near it. There is also a soft radial blur circle at the cursor position — 120px radius, primary color at 6% opacity, blurred 30px — creating a faint halo that trails the mouse.
+
+Phase 1 — Code Typewriter (t = 0 → 3s)
+12 monospace code snippets appear scattered across the canvas at fixed (x, y) positions. Strings include things like app.get('/users'), describe('checkout',, cy.visit('/login'), async function auth(), etc.
+
+Each snippet has a staggered start — every 0.3 seconds apart — so they cascade in from top-left to bottom-right. Each one types in character-by-character over 1.2 seconds with ease-out acceleration. While typing, a blinking cursor (|) flashes at 0.6s intervals (on 0.3s, off 0.3s) at the insertion point. Text color is the app's primary purple/indigo. All snippets fade out together starting at t=2.7s, fully gone by t=3.5s.
+
+Phase 2 — File Icon Scatter (t = 2.5 → 5.5s)
+15 small file card icons materialize across the canvas. Each is a rectangle (~20×18px) with a folded corner (a small filled triangle in the top-right), plus two horizontal lines inside representing text content. They're drawn in the primary color at ~30–40% stroke opacity — minimalist "document" silhouettes.
+
+They stagger in 0.15s apart. On entry each icon scales from 1.3× down to 1.0× (a subtle pop-in). As Phase 2 ends (~t=5s), they don't just fade — they physically gravitate toward the center (300, 200) of the canvas: each icon is pulled 25% of the way toward the center as it fades out, creating a "collapsing inward" effect.
+
+Phase 3 — Graph Materializes (t = 5s → 9s)
+At t=5s a large radial gradient glow bloom fades in at the center of the canvas — a 200px-radius circle, primary color fading to transparent, blooming over 1.5s.
+
+Simultaneously, 15 graph nodes materialise from the positions the file icons were at, morphing smoothly to their final network positions using lerp. The central node (cx=300, cy=200) is the largest (r=7), with 4 secondary nodes (r=4.5–5) forming a rough diamond around it, and 10 smaller peripheral nodes (r=3–4) around the edges. Each node fades in and scales up from radius 2 to its final radius over ~1s with staggered 0.15s delays.
+
+25 edges then draw in sequentially between pairs of nodes, each line growing from one node toward its neighbor over 0.8s, with 0.12s stagger between edges. Edge opacity is a low 0.25 normally, boosted by the mouse proximity effect.
+
+Phase 4 — Validation Sweep (t = 9s → 14s)
+A 60px-wide vertical light bar sweeps left-to-right across the full width of the SVG over 2.5 seconds (from x=-60 to x=660). It uses the same radial gradient as the center bloom at 40% opacity — a moving "scanner" effect.
+
+As the sweep passes each node, it validates it in a specific order (not left-to-right — it validates the central hub first, then the major spokes, then the outer leaves). Each node:
+
+Pulses outward with an emerald-green ring that expands and fades
+Transitions its fill color from the primary purple to emerald green (#34d399) over 0.6s
+Shows a small white checkmark (✓ path) drawn inside it, scaling in from 50% to 100%
+The central node (index 0) gets an extra permanent outer ring in emerald
+After validation, the 8 largest nodes continue to softly pulse with a sine-wave opacity on an emerald glow ring, creating a gentle breathing effect for the remainder of the animation.
+
+Key Numbers to Recreate It
+Variable	Value
+Canvas size	600 × 420
+Total duration	14s (then holds final state)
+Phase 1 start/end	0s → 3s
+Phase 2 start/end	2.5s → 5.5s
+Phase 3 start	5s (nodes at 5s, edges at 6.5s)
+Phase 4 start	9s
+Mouse boost radius	120px, max +0.35 opacity
+Node count	15
+Edge count	25
+Code snippet count	12
+File icon count	15
+Primary color	CSS var --primary (indigo/violet)
+Validated color	#34d399 (emerald)
+Easing	Cubic ease-out: 1 - (1-t)³

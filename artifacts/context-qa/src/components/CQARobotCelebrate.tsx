@@ -1,0 +1,135 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+
+interface Props {
+  className?: string;
+  animate?: boolean;
+}
+
+export default function CQARobotCelebrate({ className = "", animate = true }: Props) {
+  const hoverRef     = useRef<SVGGElement>(null);
+  const robotRef     = useRef<SVGGElement>(null);
+  const rightArmRef  = useRef<SVGGElement>(null);
+  const leftArmRef   = useRef<SVGGElement>(null);
+  const headRef      = useRef<SVGGElement>(null);
+  const eyesRef      = useRef<SVGGElement>(null);
+  const leftEyeRef   = useRef<SVGPathElement>(null);
+  const rightEyeRef  = useRef<SVGPathElement>(null);
+  const leftHeartRef = useRef<SVGPathElement>(null);
+  const rightHeartRef= useRef<SVGPathElement>(null);
+
+  useEffect(() => {
+    if (!animate) return;
+    const hover      = hoverRef.current;
+    const robot      = robotRef.current;
+    const rightArm   = rightArmRef.current;
+    const leftArm    = leftArmRef.current;
+    const head       = headRef.current;
+    const leftEye    = leftEyeRef.current;
+    const rightEye   = rightEyeRef.current;
+    const leftHeart  = leftHeartRef.current;
+    const rightHeart = rightHeartRef.current;
+    if (!hover || !robot || !rightArm || !leftArm || !head ||
+        !leftEye || !rightEye || !leftHeart || !rightHeart) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(rightArm,                  { svgOrigin: "143 144", rotation: 75 });
+      gsap.set(leftArm,                   { svgOrigin: "74 138" });
+      gsap.set(head,                      { svgOrigin: "109 115" });
+      gsap.set([leftHeart, rightHeart],   { opacity: 0, transformOrigin: "center center", scale: 1.5 });
+
+      /* Gentle continuous hover */
+      gsap.to(hover, {
+        y: -10,
+        duration: 1.4,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+
+      /* Head tilt */
+      gsap.timeline({ repeat: -1, repeatDelay: 4, defaults: { ease: "sine.inOut" } })
+        .to(head, { rotation: 3, duration: 0.8 })
+        .to(head, { rotation: 6, duration: 0.6, delay: 0.3 })
+        .to(head, { rotation: 0, duration: 0.9, delay: 0.5 });
+
+      /* Celebration jump + arm throw + heart eyes */
+      gsap.timeline({ repeat: -1, repeatDelay: 0.5 })
+        .to([leftEye,   rightEye],   { opacity: 0, duration: 0.45, ease: "power2.inOut" }, 0)
+        .to([leftHeart, rightHeart], { opacity: 1, duration: 0.45, ease: "power2.inOut" }, 0)
+        .to(robot,    { y: -28, duration: 0.32, ease: "power2.out"    }, 0.5)
+        .to(rightArm, { rotation: -20, duration: 0.35, ease: "back.out(2)" }, 0.5)
+        .to(leftArm,  { rotation:  92, duration: 0.35, ease: "back.out(2)" }, 0.5)
+        .to(rightArm, { rotation: -10, duration: 0.16, yoyo: true, repeat: 3, ease: "sine.inOut" }, ">")
+        .to(leftArm,  { rotation:  82, duration: 0.16, yoyo: true, repeat: 3, ease: "sine.inOut" }, "<")
+        .to([leftHeart, rightHeart], { opacity: 0, duration: 0.45, ease: "power2.inOut" }, ">-0.15")
+        .to([leftEye,   rightEye],   { opacity: 1, duration: 0.45, ease: "power2.inOut" }, "<")
+        .to(robot,    { y: 0,   duration: 0.35, ease: "power2.in"     }, "<")
+        .to(rightArm, { rotation: 75, duration: 0.45, ease: "power2.inOut" }, "<")
+        .to(leftArm,  { rotation:  0, duration: 0.45, ease: "power2.inOut" }, "<");
+
+      /* Blink (eyes group dims both eyes at once) */
+      const eyePair = [leftEye, rightEye];
+      function scheduleBlink() {
+        gsap.timeline({ onComplete: scheduleBlink, delay: 2 + Math.random() * 2.5 })
+          .to(eyePair, { opacity: 0, duration: 0.18, ease: "power2.inOut" })
+          .to(eyePair, { opacity: 1, duration: 0.22, ease: "power2.inOut" });
+      }
+      scheduleBlink();
+    });
+
+    return () => ctx.revert();
+  }, [animate]);
+
+  return (
+    <svg
+      className={className}
+      width="220"
+      height="220"
+      viewBox="0 0 220 220"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ overflow: "visible" }}
+    >
+      <g ref={hoverRef}>
+        <g ref={robotRef}>
+          <g ref={rightArmRef}>
+            <path d="M143.55 144.769L142.25 138.769C163.25 134.169 171.95 118.369 172.05 118.169L177.45 121.069C177.05 121.869 167.35 139.469 143.55 144.769Z" fill="#C2DBF2"/>
+            <path d="M177.55 128.869C171.35 128.869 166.25 123.869 166.25 117.569C166.25 111.369 171.25 106.269 177.55 106.269C183.75 106.269 188.85 111.269 188.85 117.569C188.85 123.769 183.75 128.869 177.55 128.869Z" fill="#D7E7F9"/>
+          </g>
+          <g ref={leftArmRef}>
+            <path d="M45.35 163.469L39.45 161.769C39.75 160.869 46.25 139.669 73.85 137.869L74.25 143.969C50.85 145.569 45.45 163.269 45.35 163.469Z" fill="#C2DBF2"/>
+            <path d="M42.4499 173.869C36.2499 173.869 31.1499 168.869 31.1499 162.569C31.1499 156.369 36.1499 151.269 42.4499 151.269C48.6499 151.269 53.7499 156.269 53.7499 162.569C53.6499 168.869 48.6499 173.869 42.4499 173.869Z" fill="#D7E7F9"/>
+          </g>
+          <path d="M157.15 161.469L148.45 176.469C131.95 204.969 90.8498 204.969 74.3498 176.469L65.6498 161.469C56.2498 145.169 62.1498 125.969 75.9498 116.569C76.6498 116.069 77.4498 115.569 78.2498 115.169C83.8498 112.569 96.5498 110.869 111.45 110.869C126.35 110.869 139.15 112.669 144.65 115.269C145.45 115.669 146.15 116.169 146.85 116.669C160.65 125.969 166.55 145.269 157.15 161.469Z" fill="#D7E7F9"/>
+          <path d="M147.55 118.069C147.55 122.069 131.35 125.269 111.35 125.269C91.3499 125.269 75.1499 122.069 75.1499 118.069C75.1499 117.569 75.3499 117.069 75.8499 116.669C76.3499 116.169 77.1499 115.669 78.1499 115.269C83.7499 112.669 96.4499 110.969 111.35 110.969C126.25 110.969 139.05 112.769 144.55 115.369C145.55 115.769 146.25 116.269 146.75 116.769C147.25 117.069 147.55 117.569 147.55 118.069Z" fill="#C2DBF2"/>
+          <g ref={headRef}>
+            <path d="M143.45 115.269L74.9499 107.369C59.9499 105.669 49.1499 91.969 50.8499 76.969L52.2499 64.769C55.3499 38.369 79.2499 19.469 105.65 22.469L133.05 25.669C159.45 28.769 178.35 52.569 175.25 78.969L173.85 91.169C172.05 106.269 158.45 117.069 143.45 115.269Z" fill="#D7E7F9"/>
+            <path d="M133.75 96.569L88.5499 91.369C77.0499 90.069 68.7499 79.569 70.0499 68.069L71.2499 57.669C72.5499 46.169 83.0499 37.869 94.5499 39.169L139.75 44.369C151.25 45.669 159.55 56.169 158.25 67.669L157.05 78.069C155.75 89.569 145.25 97.869 133.75 96.569Z" fill="#2F445B"/>
+            <g ref={eyesRef}>
+              <path ref={leftEyeRef}
+                d="M96.55 74.569C101.3 74.569 105.15 70.7187 105.15 65.969C105.15 61.2194 101.3 57.369 96.55 57.369C91.8003 57.369 87.95 61.2194 87.95 65.969C87.95 70.7187 91.8003 74.569 96.55 74.569Z"
+                fill="#6366F1"
+              />
+              <path ref={rightEyeRef}
+                d="M131.75 78.669C136.5 78.669 140.35 74.8186 140.35 70.069C140.35 65.3193 136.5 61.469 131.75 61.469C127 61.469 123.15 65.3193 123.15 70.069C123.15 74.8186 127 78.669 131.75 78.669Z"
+                fill="#6366F1"
+              />
+              <path ref={leftHeartRef}
+                d="M96.55 71.97C92.55 68.97 87.55 64.97 90.55 60.97C93.55 57.97 96.55 61.97 96.55 63.97C96.55 61.97 99.55 57.97 102.55 60.97C105.55 64.97 100.55 68.97 96.55 71.97Z"
+                fill="#FF4D6D"
+              />
+              <path ref={rightHeartRef}
+                d="M131.75 76.07C127.75 73.07 122.75 69.07 125.75 65.07C128.75 62.07 131.75 66.07 131.75 68.07C131.75 66.07 134.75 62.07 137.75 65.07C140.75 69.07 135.75 73.07 131.75 76.07Z"
+                fill="#FF4D6D"
+              />
+            </g>
+            <path d="M127.894 25.3374L110.512 23.3214L108.496 40.7042L125.878 42.7202L127.894 25.3374Z" fill="#C2DBF2"/>
+          </g>
+          <path d="M110.75 162.869L109.95 162.069C113.25 156.869 112.65 149.869 108.15 145.369C102.85 140.069 94.3498 140.069 89.1498 145.369C83.8498 150.669 83.8498 159.169 89.1498 164.369C93.6498 168.869 100.65 169.569 105.85 166.169L106.65 166.969L107.75 168.069C108.85 169.169 110.75 169.169 111.85 168.069C112.95 166.969 112.95 165.069 111.85 163.969L110.75 162.869ZM93.1498 160.169C90.1498 157.169 90.1498 152.369 93.1498 149.369C96.1498 146.369 100.95 146.369 103.95 149.369C106.15 151.569 106.75 154.869 105.65 157.669C105.25 158.569 104.75 159.469 103.95 160.169C103.25 160.869 102.35 161.469 101.45 161.869C98.7498 162.969 95.4498 162.469 93.1498 160.169Z" fill="#6366F1"/>
+          <path d="M131.65 141.769C130.25 141.069 128.65 140.569 126.95 140.569C126.85 140.569 126.75 140.569 126.65 140.569C124.85 140.569 123.15 140.969 121.55 141.769C117.95 143.569 115.55 147.369 115.55 151.569V164.469C115.55 166.069 116.85 167.369 118.45 167.369C120.05 167.369 121.35 166.069 121.35 164.469V158.669H127.75C129.25 158.669 130.45 157.569 130.65 156.169C130.65 155.969 130.65 155.869 130.65 155.669C130.65 155.469 130.65 155.369 130.65 155.169C130.45 153.769 129.25 152.769 127.75 152.769H121.35V151.569C121.35 148.669 123.65 146.369 126.55 146.369C129.45 146.369 131.75 148.669 131.75 151.569V164.469C131.75 166.069 133.05 167.369 134.65 167.369C136.25 167.369 137.55 166.069 137.55 164.469V151.569C137.75 147.369 135.25 143.669 131.65 141.769Z" fill="#6366F1"/>
+        </g>
+      </g>
+    </svg>
+  );
+}

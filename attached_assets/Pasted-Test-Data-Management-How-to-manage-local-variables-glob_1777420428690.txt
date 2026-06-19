@@ -1,0 +1,322 @@
+Test Data Management
+How to manage local variables, global variables, test data profiles, environment parameters, and API response variables in ContextQA for data-driven and parameterized testing.
+
+Who is this for? Testers and SDETs who need parameterized, data-driven testing — running the same test with multiple data sets without duplicating test cases.
+
+ContextQA provides four complementary data management mechanisms: local variables scoped to one test case, global variables shared across the workspace, environment parameters that vary between deployment targets, and test data profiles for data-driven testing. All four use the same ${variableName} reference syntax in test steps, making it easy to move from a hard-coded value to a parameterized one without changing step structure.
+
+Prerequisites
+You have at least one test case created.
+
+You have access to the workspace settings (you are a workspace member with Editor or Admin role).
+
+For data profiles: you have a test plan in which to attach the profile to a test case.
+
+Local Variables
+Local variables are scoped to a single test case. They exist only during the execution of that test case and are not visible to any other test case. Use local variables for values that are specific to one test scenario — a dynamically generated ID, a test-run timestamp, an intermediate value computed from an API response.
+
+Defining Local Variables
+Open the test case.
+
+Click the Settings tab (gear icon) in the test case editor.
+
+Under Local Variables, click + Add Variable.
+
+Enter the variable Name and optional Default Value.
+
+Save the test case.
+
+Alternatively, local variables are created implicitly when a REST API Call step stores its response: set "Store response in variable" to myVar and the variable myVar becomes available in all subsequent steps.
+
+Using Local Variables in Steps
+Reference local variables anywhere in a step description, URL field, or API call body using the ${varName} syntax:
+
+
+Copy
+Type ${username} in the Email Address field
+Navigate to ${ENV.BASE_URL}/users/${userId}/profile
+Set the Authorization header to Bearer ${authToken}
+Setting a Local Variable Dynamically
+You can set or update a local variable at runtime using a Set Variable action in an AI Agent step:
+
+
+Copy
+Set the variable searchTerm to "blue running shoes"
+Or capture a value displayed on the page:
+
+
+Copy
+Read the Order ID displayed on the confirmation page and store it as ${capturedOrderId}
+The AI agent reads the specified element's text content and assigns it to the named variable. This captured value can then be used in subsequent steps or REST API calls.
+
+Global Variables
+Global variables are workspace-scoped — they are available to every test case in the workspace. Use global variables for values that are shared across many test cases but are not environment-specific: a default admin account email, a standard test product name, a default search query.
+
+Creating Global Variables
+Navigate to Settings → Global Variables in the workspace settings.
+
+Click + Add Variable.
+
+Enter the variable Name and Value.
+
+Click Save.
+
+Using Global Variables in Steps
+Global variables are referenced with the same ${varName} syntax as local variables. If a global variable and a local variable share the same name, the local variable takes precedence within the test case.
+
+
+Copy
+Type ${globalAdminEmail} in the Username field
+Type ${globalAdminPassword} in the Password field
+When to Use Global vs Local Variables
+Scenario
+Use
+Admin email used in 30+ test cases
+
+Global variable
+
+User ID returned by an API call in one test
+
+Local variable
+
+Default search term used across multiple test cases
+
+Global variable
+
+Intermediate calculation within one test
+
+Local variable
+
+Test data row values from a data profile
+
+Local (auto-populated per profile row)
+
+Test Data Profiles
+Test data profiles enable data-driven testing: running the same test case multiple times, each time with a different set of input values. A profile is a table where each column is a named variable and each row is one complete test run.
+
+Creating a Test Data Profile
+Navigate to Test Development → Data Profiles.
+
+Click + Create Profile.
+
+Enter a Profile Name (e.g., LoginScenarios_MultiRole).
+
+Click + Add Column for each variable your test uses.
+
+Enter the column name exactly as it will be referenced in the test steps (case-sensitive).
+
+Click + Add Row for each data scenario.
+
+Fill in the values for each cell.
+
+Click Save.
+
+Example Data Profile
+Profile name: LoginScenarios_MultiRole
+
+username
+
+password
+
+expected_dashboard_title
+
+expected_role_label
+
+admin@test.com
+
+Admin123!
+
+Admin Dashboard
+
+Administrator
+
+manager@test.com
+
+Manager456!
+
+Manager Dashboard
+
+Manager
+
+viewer@test.com
+
+Viewer789!
+
+Reports Dashboard
+
+Read Only
+
+billing@test.com
+
+Billing000!
+
+Billing Dashboard
+
+Billing Admin
+
+When this profile is attached to a test case and executed, the test runs four times — once per row — with ${username}, ${password}, ${expected_dashboard_title}, and ${expected_role_label} substituted per row.
+
+Attaching a Profile to a Test Case
+Profiles are attached at the Test Plan level, not at the test case level:
+
+Open the test plan.
+
+In the test case configuration for the specific test case, find the Test Data Profile dropdown.
+
+Select the profile to attach.
+
+Save the test plan.
+
+When the test plan executes, the attached test case runs once per profile row. Each run produces an independent execution record with its own screenshots, video, and pass/fail result.
+
+Importing Profile Data from a Spreadsheet
+If you have existing test data in Excel or CSV format, you can import it directly:
+
+In the Data Profile editor, click Import from Spreadsheet.
+
+Ensure your spreadsheet has column headers matching the profile's column names.
+
+Upload the file.
+
+ContextQA maps the columns and imports the rows. Review the preview and confirm the import.
+
+Environment Parameters
+Environment parameters are key-value pairs stored in an environment configuration. They represent values that differ between deployment targets — base URLs, API keys, database hostnames, feature flag settings.
+
+Creating Environment Parameters
+Navigate to Test Development → Environments.
+
+Open an existing environment or click + Create Environment.
+
+Under Parameters, click + Add Parameter.
+
+Enter the Key and Value.
+
+Select the Type:
+
+Text — plain string. Displayed in the UI and available in logs.
+
+Password — encrypted at rest. Masked in the UI and redacted from execution logs.
+
+Save the environment.
+
+Using Environment Parameters in Steps
+Reference environment parameters with the ${ENV.KEY} prefix:
+
+
+Copy
+Navigate to ${ENV.BASE_URL}/login
+Type ${ENV.ADMIN_EMAIL} in the Email field
+Type ${ENV.ADMIN_PASSWORD} in the Password field
+Set request header Authorization to Bearer ${ENV.API_TOKEN}
+POST ${ENV.BASE_URL}/api/orders
+Environment Parameter vs Global Variable
+Both can store reusable string values. The distinction is:
+
+Environment parameters vary between environments (staging BASE_URL is different from production BASE_URL).
+
+Global variables are the same across all environments.
+
+If a value is the same whether running against staging or production, use a global variable. If it differs by environment, use an environment parameter.
+
+Using API Response Data as Variables
+REST API Call steps can capture response data and make it available to subsequent steps as variables. This is the primary mechanism for chaining API calls and mixing API interactions with UI interactions within a single test case.
+
+Storing an API Response
+In a REST API Call step, set the Store response in variable field to a variable name. The entire response object is stored under that name:
+
+
+Copy
+Step: REST API Call
+  Method: POST
+  URL: ${ENV.BASE_URL}/api/auth/login
+  Body: { "email": "${ENV.ADMIN_EMAIL}", "password": "${ENV.ADMIN_PASSWORD}" }
+  Store response in variable: loginResponse
+Accessing Response Data
+The stored variable exposes the following sub-properties:
+
+Expression
+Description
+Example Value
+${loginResponse.status}
+
+HTTP status code
+
+200
+
+${loginResponse.body.token}
+
+Top-level JSON body field
+
+eyJhbGci...
+
+${loginResponse.body.user.id}
+
+Nested JSON body field
+
+42
+
+${loginResponse.body.user.email}
+
+Nested JSON body field
+
+admin@test.com
+
+${loginResponse.headers.content-type}
+
+Response header
+
+application/json
+
+${loginResponse.headers.set-cookie}
+
+Cookie set by the response
+
+session=abc; Path=/
+
+Chaining Multiple API Calls
+
+Copy
+Step 1 (REST API): POST /api/auth/login
+  Store response in: authResponse
+
+Step 2 (REST API): POST /api/projects
+  Headers: Authorization: Bearer ${authResponse.body.token}
+  Body: { "name": "Test Project ${timestamp}" }
+  Store response in: projectResponse
+
+Step 3 (AI Agent): Navigate to ${ENV.BASE_URL}/projects/${projectResponse.body.id}
+
+Step 4 (AI Verification): Verify the project name "Test Project" is displayed
+  in the page heading
+
+Step 5 (REST API): DELETE /api/projects/${projectResponse.body.id}
+  Headers: Authorization: Bearer ${authResponse.body.token}
+  (Cleanup: delete the test project)
+This pattern — create test data via API, test the UI that displays it, clean up via API — produces tests that are fully self-contained and do not leave orphaned data in the test environment.
+
+Tips & Best Practices
+Use password-type parameters for all credentials and tokens. Even in test environments, API keys, passwords, and session tokens should be stored as password-type parameters. This prevents them from appearing in screenshots, logs, or exported test data.
+
+Build one data profile per functional scenario. Do not mix different types of test data in one profile (e.g., valid credentials and invalid credentials in the same profile). Keep each profile focused on one scenario type so the profile name is self-describing and test results are easy to interpret.
+
+Use API calls for test data setup, not manual data entry. If a test requires a specific record to exist (a user, an order, a product), create it via a REST API Call step at the start of the test rather than relying on pre-existing test data that might be deleted or modified between runs.
+
+Clean up after yourself with API teardown steps. Add REST API Call steps at the end of tests to delete records created during the test. This keeps the test environment clean across repeated runs and prevents tests from interfering with each other.
+
+Document global variable purpose in the description field. As the workspace grows, it becomes hard to remember what each global variable is for. Add a clear description when creating global variables, including which test cases use them and when they should be updated.
+
+Troubleshooting
+A variable is showing as ${varName} in the screenshot rather than its value This means the variable was not resolved at runtime. Check that:
+
+The variable name in the step exactly matches the variable name as defined (case-sensitive).
+
+For local variables set by a previous step, confirm the previous step passed — failed steps do not produce variable output.
+
+For environment parameters, confirm the environment was selected in the test plan.
+
+A REST API response variable is accessible in one step but not in a later step Variable scope is sequential — a variable set by step N is available to all steps after step N. If you are referencing a variable before the step that sets it, reorder the steps.
+
+The data profile is attached but the test case runs only once Confirm the profile is attached in the Test Plan configuration, not just viewed in the data profile list. The profile must be explicitly selected in the test case row within the test plan's suite configuration.
+
+Password-type environment parameters are appearing in test step descriptions Password parameters are masked in the UI and in execution logs, but the test step description itself is not modified. If you have written the literal value of a password into a step description rather than using the variable reference ${ENV.PASSWORD}, it will appear in plain text. Always use variable references for sensitive values — never hard-code credentials in step text.
