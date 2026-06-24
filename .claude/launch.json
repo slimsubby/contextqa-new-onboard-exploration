@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "context-qa",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/slimsubby/contextqa-new-onboard-exploration/artifacts/context-qa && PORT=24792 BASE_PATH=/ ./node_modules/.bin/vite --config vite.config.ts --host 0.0.0.0"
+      ],
+      "port": 24792,
+      "autoPort": false
+    }
+  ]
+}

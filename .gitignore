@@ -50,3 +50,6 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Claude Design handoff import bundle (working files, kept local)
+_handoff/
