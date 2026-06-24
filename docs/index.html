@@ -200,6 +200,7 @@
                   <input value="{{ suEmail }}" onChange="{{ setSuEmail }}" onKeyDown="{{ onSuEmailKey }}" placeholder="you@company.com" style="width:100%;height:46px;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0 14px;font-size:var(--fs-base);color:var(--ink-900);outline:none" style-focus="border-color:var(--brand-600)" />
                 </div>
                 <button onClick="{{ continueEmail }}" style="width:100%;height:46px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer" style-hover="background:var(--brand-500)">Continue with email</button>
+                <p style="text-align:center;font-size:var(--fs-sm);color:var(--ink-400);margin-top:4px">Already have an account? <a href="#" onClick="{{ backToLogin }}" style="color:var(--brand-600);font-weight:600">Sign in</a></p>
               </div>
             </sc-if>
 
