@@ -262,7 +262,7 @@
                     <sc-for list="{{ teamOpts }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="flex:1;padding:9px 4px;border:1.5px solid {{ t.border }};background:{{ t.bg }};border-radius:var(--r-lg);font-size:12px;font-weight:600;color:{{ t.color }};cursor:pointer" style-hover="border-color:var(--brand-600)">{{ t.label }}</button></sc-for>
                   </div>
                 </div>
-                <button onClick="{{ startCrawl }}" style="width:100%;height:46px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;margin-top:2px" style-hover="background:var(--brand-500)">Create workspace &amp; start crawl →</button>
+                <button onClick="{{ startCrawl }}" style="width:100%;height:46px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;margin-top:2px" style-hover="background:var(--brand-500)">Create workspace →</button>
               </div>
             </sc-if>
 
@@ -297,6 +297,29 @@
           </div>
           <button onClick="{{ beginRun }}" style="width:100%;height:48px;background:var(--brand-600);border:none;border-radius:var(--r-xl);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)"><span class="ms" style="font-size:19px">play_arrow</span>Start the live run</button>
         </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ WORKSPACE CREATED (activation milestone) ============ -->
+  <sc-if value="{{ isCreated }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Workspace created" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(1100px 720px at 50% 18%, var(--brand-50) 0%, #FFFFFF 58%, var(--surface-canvas) 100%);padding:40px 24px">
+      <div style="position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle, rgba(63,67,238,.06) 1.1px, transparent 1.1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(120% 100% at 50% 40%, #000 35%, transparent 100%);mask-image:radial-gradient(120% 100% at 50% 40%, #000 35%, transparent 100%)"></div>
+      <div style="position:relative;z-index:1;width:460px;max-width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-3xl);box-shadow:var(--sh-lg);padding:46px 40px;text-align:center;animation:seanRise .4s ease-out both">
+        <div style="width:88px;height:88px;border-radius:50%;background:var(--success-50);display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
+          <svg width="48" height="48" viewBox="0 0 52 52" fill="none">
+            <circle cx="26" cy="26" r="23" stroke="var(--success-600)" stroke-width="3" fill="none" stroke-dasharray="145" stroke-dashoffset="145" style="animation:seanDraw .6s .1s ease-out forwards"></circle>
+            <path d="M16 26.5l7 7 13.5-14.5" stroke="var(--success-600)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="42" stroke-dashoffset="42" style="animation:seanDraw .45s .55s ease-out forwards"></path>
+          </svg>
+        </div>
+        <div style="font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--success-600);margin-bottom:8px">Activation complete</div>
+        <h1 style="font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--ink-900);line-height:1.15">Workspace created</h1>
+        <p style="font-size:var(--fs-base);color:var(--ink-500);margin-top:10px;line-height:1.55;max-width:340px;margin-left:auto;margin-right:auto">Your QA workspace for <b style="color:var(--ink-800)">{{ companyName }}</b> is ready. Let's bring in your product context.</p>
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:10px 16px;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:var(--r-lg)">
+          <span class="ms" style="font-size:19px;color:var(--brand-600)">workspaces</span>
+          <span style="font-size:var(--fs-sm);font-weight:600;color:var(--ink-800)">{{ website }}</span>
+        </div>
+        <button onClick="{{ enterWorkspace }}" style="width:100%;height:48px;margin-top:28px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)">Enter ContextQA<span class="ms" style="font-size:19px">arrow_forward</span></button>
       </div>
     </div>
   </sc-if>
@@ -967,7 +990,13 @@ class Component extends DCLogic {
   }
   startCrawl(){
     if (!(this.state.website||'').trim()) return;
-    // land on the dashboard, then open the integrations explainer over it
+    // celebrate the activation milestone, then flow into the dashboard welcome
+    this.clearTimers();
+    this.setState({ screen: 'created' });
+    this.after(3500, () => this.enterWorkspace());
+  }
+  enterWorkspace(){
+    this.clearTimers();
     this.setState({ screen: 'dashboard', hasContext: false, modalOpen: true, modalStep: 'intro' });
     this.runModal();
   }
@@ -1263,6 +1292,7 @@ class Component extends DCLogic {
       isSignup: this.state.screen === 'signup',
       isDashboard: this.state.screen === 'dashboard',
       isBuilding: this.state.screen === 'building',
+      isCreated: this.state.screen === 'created',
       email: this.state.email,
       password: this.state.password,
       pwType: this.state.showPw ? 'text' : 'password',
@@ -1301,6 +1331,7 @@ class Component extends DCLogic {
       })),
       continueProfile: () => this.continueProfile(),
       startCrawl: () => this.startCrawl(),
+      enterWorkspace: () => this.enterWorkspace(),
       introOpen: this.state.introOpen,
       closeIntro: () => this.setState({ introOpen: false }),
       beginRun: () => this.beginRun(),
