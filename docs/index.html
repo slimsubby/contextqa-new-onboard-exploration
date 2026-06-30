@@ -792,26 +792,29 @@
 
             <!-- body -->
             <div style="padding:20px 26px 24px">
+
+              <!-- ░░ MENU ░░ -->
+              <sc-if value="{{ ctxMenu }}" hint-placeholder-val="{{ true }}">
               <p style="font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin-bottom:14px">Pick a source to bring in.</p>
 
               <!-- method cards -->
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px">
                 <!-- Crawl a website -->
-                <div style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:var(--brand-300);box-shadow:0 4px 14px rgba(63,67,238,.1)">
+                <div onClick="{{ ctxGoCrawl }}" style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:var(--brand-300);box-shadow:0 4px 14px rgba(63,67,238,.1)">
                   <div style="width:40px;height:40px;border-radius:10px;background:var(--brand-50);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span class="ms" style="font-size:22px;color:var(--brand-600)">language</span></div>
                   <h4 style="font-size:var(--fs-md);font-weight:700;color:var(--ink-900);margin-bottom:5px">Crawl a website</h4>
                   <p style="font-size:var(--fs-sm);color:var(--ink-500);line-height:1.45;flex:1">Point ContextQA at a URL — it maps pages, journeys, and flows automatically.</p>
                   <span style="font-size:var(--fs-sm);font-weight:600;color:var(--brand-600);margin-top:12px">Get started →</span>
                 </div>
                 <!-- Upload documents -->
-                <div style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:#86EFAC;box-shadow:0 4px 14px rgba(22,163,74,.1)">
+                <div onClick="{{ ctxGoUpload }}" style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:#86EFAC;box-shadow:0 4px 14px rgba(22,163,74,.1)">
                   <div style="width:40px;height:40px;border-radius:10px;background:#DCFCE7;display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span class="ms" style="font-size:22px;color:#16A34A">upload_file</span></div>
                   <h4 style="font-size:var(--fs-md);font-weight:700;color:var(--ink-900);margin-bottom:5px">Upload documents</h4>
                   <p style="font-size:var(--fs-sm);color:var(--ink-500);line-height:1.45;flex:1">PDFs, Word docs, PRDs, Swagger specs, or spreadsheets — extracted automatically.</p>
                   <span style="font-size:var(--fs-sm);font-weight:600;color:#16A34A;margin-top:12px">Get started →</span>
                 </div>
                 <!-- Record or import video -->
-                <div style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:#FDBA74;box-shadow:0 4px 14px rgba(234,88,12,.1)">
+                <div onClick="{{ ctxGoRecord }}" style="border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column" style-hover="border-color:#FDBA74;box-shadow:0 4px 14px rgba(234,88,12,.1)">
                   <div style="width:40px;height:40px;border-radius:10px;background:#FFEDD5;display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span class="ms" style="font-size:22px;color:#EA580C">videocam</span></div>
                   <h4 style="font-size:var(--fs-md);font-weight:700;color:var(--ink-900);margin-bottom:5px">Record or import video</h4>
                   <p style="font-size:var(--fs-sm);color:var(--ink-500);line-height:1.45;flex:1">Record a walkthrough in-browser, or import a screen recording of your product.</p>
@@ -820,7 +823,7 @@
               </div>
 
               <!-- manual row -->
-              <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;margin-top:13px;border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:background .15s" style-hover="background:var(--ink-050)">
+              <div onClick="{{ ctxGoNote }}" style="display:flex;align-items:center;gap:13px;padding:14px 16px;margin-top:13px;border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:background .15s" style-hover="background:var(--ink-050)">
                 <span class="ms" style="font-size:20px;color:var(--ink-500)">edit_note</span>
                 <div style="flex:1;min-width:0">
                   <div style="font-size:var(--fs-base);font-weight:600;color:var(--ink-900)">Add a note by hand</div>
@@ -849,6 +852,103 @@
                   </div>
                 </sc-for>
               </div>
+              </sc-if>
+
+              <!-- ░░ CRAWL A WEBSITE ░░ -->
+              <sc-if value="{{ ctxCrawlView }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ ctxBack }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--ink-500);cursor:pointer;font-size:var(--fs-sm);font-weight:600;padding:0;margin-bottom:18px" style-hover="color:var(--brand-600)"><span class="ms" style="font-size:18px">arrow_back</span>Back to sources</button>
+                <div style="display:flex;align-items:center;gap:13px;margin-bottom:20px">
+                  <div style="width:46px;height:46px;border-radius:12px;background:var(--brand-50);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="ms" style="font-size:24px;color:var(--brand-600)">language</span></div>
+                  <div><h3 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:800;color:var(--ink-900)">Crawl a website</h3><p style="font-size:var(--fs-sm);color:var(--ink-500);margin-top:2px">ContextQA opens your site and maps pages, journeys and flows into a knowledge base.</p></div>
+                </div>
+                <label style="display:block;font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin-bottom:7px">Website URL</label>
+                <div style="display:flex;align-items:center;height:48px;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0 14px;background:var(--surface)">
+                  <span style="font-size:var(--fs-base);color:var(--ink-300)">https://</span>
+                  <input value="{{ ctxUrl }}" onChange="{{ setCtxUrl }}" placeholder="yourcompany.com" style="flex:1;border:none;outline:none;font-size:var(--fs-base);color:var(--ink-900);padding:0 6px;min-width:0;background:transparent" />
+                </div>
+                <p style="display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--ink-400);margin-top:9px"><span class="ms" style="font-size:14px;color:var(--brand-600)">auto_awesome</span>We'll explore it live and capture pages, flows and edge cases.</p>
+                <button onClick="{{ ctxStartCrawl }}" style="width:100%;height:48px;margin-top:22px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)"><span class="ms" style="font-size:19px">travel_explore</span>Start crawl</button>
+              </sc-if>
+
+              <!-- ░░ UPLOAD DOCUMENTS ░░ -->
+              <sc-if value="{{ ctxUploadView }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ ctxBack }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--ink-500);cursor:pointer;font-size:var(--fs-sm);font-weight:600;padding:0;margin-bottom:18px" style-hover="color:var(--brand-600)"><span class="ms" style="font-size:18px">arrow_back</span>Back to sources</button>
+                <h3 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:800;color:var(--ink-900)">Upload documents</h3>
+                <p style="font-size:var(--fs-sm);color:var(--ink-500);margin-top:2px">PDFs, Word docs, PRDs, Swagger specs or spreadsheets — ContextQA extracts the details automatically.</p>
+                <p style="font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin:20px 0 10px">What would you like to import?</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div onClick="{{ ctxPickReq }}" style="border:1.5px solid {{ ctxReqBorder }};background:{{ ctxReqBg }};border-radius:12px;padding:15px;cursor:pointer;transition:border-color .15s">
+                    <span class="ms" style="font-size:21px;color:var(--brand-600)">description</span>
+                    <div style="font-size:var(--fs-base);font-weight:700;color:var(--ink-900);margin-top:9px">Import Requirements</div>
+                    <div style="font-size:var(--fs-xs);color:var(--ink-500);line-height:1.45;margin-top:4px">XLSX, CSV, TXT, PDF, images or video — generate tests from requirements.</div>
+                  </div>
+                  <div onClick="{{ ctxPickTc }}" style="border:1.5px solid {{ ctxTcBorder }};background:{{ ctxTcBg }};border-radius:12px;padding:15px;cursor:pointer;transition:border-color .15s">
+                    <span class="ms" style="font-size:21px;color:var(--brand-600)">table_view</span>
+                    <div style="font-size:var(--fs-base);font-weight:700;color:var(--ink-900);margin-top:9px">Import Test Cases</div>
+                    <div style="font-size:var(--fs-xs);color:var(--ink-500);line-height:1.45;margin-top:4px">Upload an XLSX of existing test cases and we'll optimize them.</div>
+                  </div>
+                </div>
+                <div style="margin-top:14px;border:1.5px dashed var(--ink-200);border-radius:12px;padding:26px;text-align:center;background:var(--ink-025)">
+                  <span class="ms" style="font-size:30px;color:var(--ink-300)">cloud_upload</span>
+                  <div style="font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin-top:8px">Drag &amp; drop files here, or <span style="color:var(--brand-600)">browse</span></div>
+                  <div style="font-size:var(--fs-xs);color:var(--ink-400);margin-top:4px">XLSX · CSV · PDF · DOCX · PNG · MP4 — up to 50MB</div>
+                </div>
+                <sc-if value="{{ ctxBusy }}" hint-placeholder-val="{{ false }}">
+                  <button style="width:100%;height:48px;margin-top:18px;background:var(--brand-300);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;cursor:default"><span class="ms" style="font-size:19px;animation:seanSpin .9s linear infinite">progress_activity</span>Processing your files…</button>
+                </sc-if>
+                <sc-if value="{{ ctxNotBusy }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ ctxDoUpload }}" style="width:100%;height:48px;margin-top:18px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)"><span class="ms" style="font-size:19px">upload</span>Upload &amp; process</button>
+                </sc-if>
+              </sc-if>
+
+              <!-- ░░ RECORD OR IMPORT VIDEO ░░ -->
+              <sc-if value="{{ ctxRecordView }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ ctxBack }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--ink-500);cursor:pointer;font-size:var(--fs-sm);font-weight:600;padding:0;margin-bottom:18px" style-hover="color:var(--brand-600)"><span class="ms" style="font-size:18px">arrow_back</span>Back to sources</button>
+                <div style="border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-align:center;background:radial-gradient(420px 200px at 50% 0%, var(--brand-50) 0%, var(--surface) 70%)">
+                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px"><span class="ms" style="font-size:30px;color:var(--brand-600)">extension</span><span class="ms" style="font-size:30px;color:var(--ink-300)">videocam</span></div>
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:800;color:var(--ink-900)">ContextQA Chrome Extension Required</h3>
+                  <p style="font-size:var(--fs-sm);color:var(--ink-500);line-height:1.5;margin-top:8px;max-width:420px;margin-left:auto;margin-right:auto">To record actions, you need the ContextQA extension installed in your Chrome browser. It captures your interactions and automatically converts them into test steps.</p>
+                  <button style="width:100%;height:46px;margin-top:18px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)"><span class="ms" style="font-size:19px">download</span>Install ContextQA Extension</button>
+                  <div style="font-size:var(--fs-xs);color:var(--ink-400);margin-top:12px">● Free · Works with Chrome &amp; Edge · Takes 10 seconds</div>
+                </div>
+                <h4 style="font-size:var(--fs-base);font-weight:700;color:var(--ink-900);margin:22px 0 12px">How recording works</h4>
+                <sc-for list="{{ recordSteps }}" as="r" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-50);color:var(--brand-600);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ r.n }}</div>
+                    <div><div style="font-size:var(--fs-sm);font-weight:600;color:var(--ink-900)">{{ r.t }}</div><div style="font-size:var(--fs-xs);color:var(--ink-500);line-height:1.45;margin-top:1px">{{ r.d }}</div></div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ ctxBusy }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;font-size:var(--fs-sm);font-weight:600;color:var(--brand-600)"><span class="ms" style="font-size:18px;animation:seanSpin .9s linear infinite">progress_activity</span>Recording your walkthrough…</div>
+                </sc-if>
+                <sc-if value="{{ ctxNotBusy }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ ctxHaveExt }}" style="display:block;margin:4px auto 0;background:transparent;border:none;font-size:var(--fs-sm);font-weight:600;color:var(--brand-600);cursor:pointer" style-hover="text-decoration:underline">I already have the extension installed →</button>
+                </sc-if>
+              </sc-if>
+
+              <!-- ░░ ADD A NOTE BY HAND ░░ -->
+              <sc-if value="{{ ctxNoteView }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ ctxBack }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--ink-500);cursor:pointer;font-size:var(--fs-sm);font-weight:600;padding:0;margin-bottom:18px" style-hover="color:var(--brand-600)"><span class="ms" style="font-size:18px">arrow_back</span>Back to sources</button>
+                <h3 style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:800;color:var(--ink-900)">Add a note by hand</h3>
+                <p style="font-size:var(--fs-sm);color:var(--ink-500);margin-top:2px">Jot down an industry detail, constraint, or edge case ContextQA should keep in mind.</p>
+                <label style="display:block;font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin:20px 0 7px">Title</label>
+                <input value="{{ ctxNoteTitle }}" onChange="{{ setCtxNoteTitle }}" placeholder="e.g. Checkout requires a logged-in user" style="width:100%;height:46px;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0 14px;font-size:var(--fs-base);color:var(--ink-900);outline:none" style-focus="border-color:var(--brand-600)" />
+                <label style="display:block;font-size:var(--fs-sm);font-weight:600;color:var(--ink-700);margin:14px 0 7px">Note</label>
+                <textarea value="{{ ctxNoteBody }}" onChange="{{ setCtxNoteBody }}" placeholder="Describe the detail, rule or edge case in plain English…" style="width:100%;min-height:120px;resize:vertical;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;font-size:var(--fs-base);color:var(--ink-900);outline:none;font-family:var(--font-sans)" style-focus="border-color:var(--brand-600)"></textarea>
+                <button onClick="{{ ctxAddNote }}" style="width:100%;height:48px;margin-top:18px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:var(--brand-500)"><span class="ms" style="font-size:19px">note_add</span>Add to knowledge base</button>
+              </sc-if>
+
+              <!-- ░░ CONTEXT ADDED (success) ░░ -->
+              <sc-if value="{{ ctxDoneView }}" hint-placeholder-val="{{ false }}">
+                <div style="text-align:center;padding:34px 10px 12px;animation:seanRise .4s ease-out both">
+                  <div style="width:74px;height:74px;border-radius:50%;background:var(--success-50);display:flex;align-items:center;justify-content:center;margin:0 auto 20px"><span class="ms" style="font-size:38px;color:var(--success-600)">check_circle</span></div>
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-xl);font-weight:800;color:var(--ink-900)">Context added</h3>
+                  <p style="font-size:var(--fs-base);color:var(--ink-500);margin-top:8px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.5">{{ ctxDoneMsg }}</p>
+                  <button onClick="{{ ctxFinish }}" style="width:100%;height:48px;margin-top:24px;background:var(--brand-600);border:none;border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:#fff;cursor:pointer" style-hover="background:var(--brand-500)">Done</button>
+                  <button onClick="{{ ctxAddMore }}" style="width:100%;height:46px;margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);font-size:var(--fs-base);font-weight:600;color:var(--ink-700);cursor:pointer" style-hover="background:var(--ink-050)">Add more context</button>
+                </div>
+              </sc-if>
+
             </div>
           </div>
         </div>
@@ -932,6 +1032,14 @@ class Component extends DCLogic {
     // add-context modal
     addCtxOpen: false,
     plugStatus: {},
+    // add-context sub-views
+    ctxView: 'menu',     // menu | crawl | upload | record | note | done
+    ctxUrl: '',
+    ctxUploadKind: '',   // requirements | testcases
+    ctxNoteTitle: '',
+    ctxNoteBody: '',
+    ctxBusy: false,
+    ctxDoneMsg: '',
   };
 
   KNOWN_ORGS = { 'halight.com': 'Halight Inc.', 'contextqa.com': 'ContextQA', 'acme.com': 'Acme Corporation' };
@@ -1401,9 +1509,50 @@ class Component extends DCLogic {
       hasContext: this.state.hasContext,
       noContext: !this.state.hasContext,
       addMore: () => this.setState({ modalOpen: false, hasContext: true }),
-      openAddCtx: () => this.setState({ addCtxOpen: true, modalOpen: false }),
+      openAddCtx: () => this.setState({ addCtxOpen: true, modalOpen: false, ctxView: 'menu' }),
       closeAddCtx: () => this.setState({ addCtxOpen: false }),
       addCtxOpen: this.state.addCtxOpen,
+      // add-context sub-view state
+      ctxMenu: this.state.ctxView === 'menu',
+      ctxCrawlView: this.state.ctxView === 'crawl',
+      ctxUploadView: this.state.ctxView === 'upload',
+      ctxRecordView: this.state.ctxView === 'record',
+      ctxNoteView: this.state.ctxView === 'note',
+      ctxDoneView: this.state.ctxView === 'done',
+      ctxUrl: this.state.ctxUrl,
+      ctxNoteTitle: this.state.ctxNoteTitle,
+      ctxNoteBody: this.state.ctxNoteBody,
+      ctxBusy: this.state.ctxBusy,
+      ctxNotBusy: !this.state.ctxBusy,
+      ctxDoneMsg: this.state.ctxDoneMsg,
+      ctxReqPicked: this.state.ctxUploadKind === 'requirements',
+      ctxTcPicked: this.state.ctxUploadKind === 'testcases',
+      ctxReqBorder: this.state.ctxUploadKind === 'requirements' ? 'var(--brand-600)' : 'var(--border)',
+      ctxReqBg: this.state.ctxUploadKind === 'requirements' ? 'var(--brand-50)' : 'var(--surface)',
+      ctxTcBorder: this.state.ctxUploadKind === 'testcases' ? 'var(--brand-600)' : 'var(--border)',
+      ctxTcBg: this.state.ctxUploadKind === 'testcases' ? 'var(--brand-50)' : 'var(--surface)',
+      setCtxUrl: (e) => this.setState({ ctxUrl: e.target.value }),
+      setCtxNoteTitle: (e) => this.setState({ ctxNoteTitle: e.target.value }),
+      setCtxNoteBody: (e) => this.setState({ ctxNoteBody: e.target.value }),
+      ctxGoCrawl: () => this.setState({ ctxView: 'crawl', ctxUrl: this.state.ctxUrl || (this.state.website || '') }),
+      ctxGoUpload: () => this.setState({ ctxView: 'upload', ctxUploadKind: '' }),
+      ctxGoRecord: () => this.setState({ ctxView: 'record' }),
+      ctxGoNote: () => this.setState({ ctxView: 'note' }),
+      ctxBack: () => this.setState({ ctxView: 'menu', ctxBusy: false }),
+      ctxPickReq: () => this.setState({ ctxUploadKind: 'requirements' }),
+      ctxPickTc: () => this.setState({ ctxUploadKind: 'testcases' }),
+      ctxStartCrawl: () => { const u = (this.state.ctxUrl || '').trim(); if (!u) return; this.setState({ addCtxOpen: false, website: u }); this.beginRun(); },
+      ctxDoUpload: () => { if (!this.state.ctxUploadKind) return; this.setState({ ctxBusy: true }); this.after(1700, () => this.setState({ ctxBusy: false, ctxView: 'done', ctxDoneMsg: this.state.ctxUploadKind === 'testcases' ? 'Imported test cases — 26 cases added to your library.' : 'Requirements processed — 18 context items captured.' })); },
+      ctxAddNote: () => { if (!(this.state.ctxNoteTitle || '').trim()) return; this.setState({ ctxView: 'done', ctxDoneMsg: 'Note saved to your knowledge base.' }); },
+      ctxHaveExt: () => { this.setState({ ctxBusy: true }); this.after(1800, () => this.setState({ ctxBusy: false, ctxView: 'done', ctxDoneMsg: 'Walkthrough captured — 12 steps recorded.' })); },
+      ctxFinish: () => this.setState({ addCtxOpen: false, hasContext: true, ctxView: 'menu', ctxNoteTitle: '', ctxNoteBody: '', ctxUrl: '', ctxUploadKind: '' }),
+      ctxAddMore: () => this.setState({ ctxView: 'menu', ctxNoteTitle: '', ctxNoteBody: '', ctxUploadKind: '' }),
+      recordSteps: [
+        { n: '1', t: 'Install the extension', d: 'Add ContextQA to your Chrome browser from the Web Store.' },
+        { n: '2', t: 'Enter your application URL', d: 'Tell us which page to open — the extension launches it in a new tab.' },
+        { n: '3', t: 'Interact with your app', d: 'Click, type, navigate — every action is captured in real time.' },
+        { n: '4', t: 'Save as context', d: 'Stop recording and ContextQA turns the walkthrough into product context.' },
+      ],
       stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
       ctxPlugins: [
         { id:'jira',   label:'Jira',   sub:'Requirements & tickets' },
